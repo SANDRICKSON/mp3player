@@ -1,0 +1,72 @@
+from tkinter import *
+import tkinter as tk
+from tkinter import filedialog, ttk
+from pygame import mixer
+import os
+
+root = Tk()
+root.title("Music Player")
+root.geometry("920x670+290+85")
+root.configure(bg="#0f1a2b")
+root.resizable(False, False)
+
+mixer.init()
+
+def open_folder():
+    path = filedialog.askdirectory()
+    if path:
+        os.chdir(path)
+        songs = [song for song in os.listdir(path) if song.endswith(".mp3")]
+        playlist.delete(0, END)  # სიას ვასუფთავებთ
+        for song in songs:
+            playlist.insert(END, song)
+
+def play_song():
+    music_name = playlist.get(ACTIVE)
+    if music_name:
+        mixer.music.load(music_name)
+        mixer.music.play()
+        music.config(text=f"Playing: {music_name}")
+
+# სურათების ჩატვირთვა
+image_icon = PhotoImage(file="logo.png")
+root.iconphoto(False, image_icon)
+
+Top = PhotoImage(file="top.png")
+Label(root, image=Top, bg="#0f1a2b").pack()
+
+Logo = PhotoImage(file="logo.png")
+Label(root, image=Logo, bg="#0f1a2b").place(x=65, y=115)
+
+play_button = PhotoImage(file="play.png")
+Button(root, image=play_button, bg="#0f1a2b", bd=0, command=play_song).place(x=100, y=400)
+
+stop_button = PhotoImage(file="stop.png")
+Button(root, image=stop_button, bg="#0f1a2b", bd=0, command=mixer.music.stop).place(x=160, y=400)
+
+resume_button = PhotoImage(file="resume.png")
+Button(root, image=resume_button, bg="#0f1a2b", bd=0, command=mixer.music.unpause).place(x=220, y=400)
+
+pause_button = PhotoImage(file="pause.png")
+Button(root, image=pause_button, bg="#0f1a2b", bd=0, command=mixer.music.pause).place(x=280, y=400)
+
+Menu = PhotoImage(file="menu.png")
+Label(root, image=Menu, bg="#0f1a2b").place(x=800, y=50)
+
+# მუსიკის ფანჯარა
+music_frame = Frame(root, bd=2, relief=RIDGE)
+music_frame.place(x=330, y=350, height=250, width=560)
+
+# ღილაკი ფაილების გასახსნელად
+Button(root, text="Open Folder", width=15, height=2, font=("arial", 10, "bold"), fg="white", bg="#21b3de", command=open_folder).place(x=330, y=300)
+
+scroll = Scrollbar(music_frame)
+playlist = Listbox(music_frame, width=100, font=("arial", 10), bg="#333333", selectbackground="lightblue", cursor="hand2", bd=0, yscrollcommand=scroll.set)
+scroll.config(command=playlist.yview)
+scroll.pack(side=RIGHT, fill=Y)
+playlist.pack(side=LEFT, fill=BOTH)
+
+music = Label(root, text="", font=("arial", 15), fg="white", bg="#0f1a2b")  # შეცვლილი HEX კოდი
+music.place(x=150, y=340, anchor="center")
+
+root.mainloop()
